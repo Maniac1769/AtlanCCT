@@ -1,7 +1,3 @@
-Here’s a detailed `README.md` file for your project based on the provided files and context. This README is structured to explain the project, its purpose, components, and how to run the demo.
-
----
-
 # **Cloud Cost Optimization System**
 
 ## **Overview**
