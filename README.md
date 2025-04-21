@@ -50,16 +50,6 @@ The sequence diagram (`Atlan_seq.png`) illustrates how the system works:
 4. Kafka triggers Argo Workflows for automated resource optimization.
 5. Admission Controller validates workflows before applying changes to cloud resources.
 
-### **Class Diagram**
-![Class Diagram](Atlanseq.png)
-
-The class diagram (`Atlan.png`) represents the data model:
-- **CloudProvider**: Represents AWS, Azure, or GCP.
-- **CostMetric**: Stores cost data with tags for attribution (e.g., team/project).
-- **Anomaly**: Captures detected anomalies when costs exceed thresholds.
-- **OptimizationWorkflow**: Represents automated workflows triggered by anomalies.
-- **Resource**: Represents cloud resources being optimized (e.g., compute instances).
-
 ---
 
 ## **How It Works**
