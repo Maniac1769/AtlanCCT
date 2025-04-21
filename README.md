@@ -41,7 +41,7 @@ The system is designed to:
 ## **System Design**
 
 ### **Sequence Diagram**
-![Sequence Diagram](Atlan.png)
+![Sequence Diagram](Atlanseq.png)
 
 The sequence diagram (`Atlan_seq.png`) illustrates how the system works:
 1. Cloud providers send cost metrics to VictoriaMetrics.
