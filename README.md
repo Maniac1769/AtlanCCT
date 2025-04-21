@@ -9,7 +9,9 @@ The system is designed to:
 3. Provide detailed insights into cost trends and optimization actions.
 
 ---
-
+## **Architecture**
+![Architecture Diagram](Atlan.png)
+---
 ## **Project Structure**
 
 ### **Files and Artifacts**
