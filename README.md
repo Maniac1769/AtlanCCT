@@ -18,7 +18,7 @@ The system is designed to:
    - It shows how components like VictoriaMetrics, Kafka, Argo Workflows, and Alertmanager interact.
 
 2. **`Atlan.png`**  
-   - A class diagram representing the key entities in the system (e.g., CloudProvider, CostMetric, Anomaly) and their relationships.
+   - An Architecture diagram representing the key entities in the system (e.g., CloudProvider, CostMetric, Anomaly) and their relationships.
    - Useful for understanding the data model and entity interactions.
 
 3. **`documentation.pdf`**  
