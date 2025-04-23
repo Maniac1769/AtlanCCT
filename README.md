@@ -14,7 +14,7 @@ The system continuously collects cost data from AWS, Azure, and GCP, detects ano
 
 ### Architecture Diagram
 
-Architecture Diagram
+!Architecture Diagram[!atlan1.png]
 
 ### Sequence Diagram
 
