@@ -14,11 +14,11 @@ The system continuously collects cost data from AWS, Azure, and GCP, detects ano
 
 ### Architecture Diagram
 
-[!Architecture Diagram](atlan1.png)
+![Architecture Diagram](atlan1.png)
 
 ### Sequence Diagram
 
-[!Sequence Diagram](Atlanseq.png)
+![Sequence Diagram](Atlanseq.png)
 
 ## System Components
 
