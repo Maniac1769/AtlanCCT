@@ -193,13 +193,87 @@ python demo.py
 ### Example Output
 
 ```
-📊 [Fluent Bit] Collecting logs from AWS, Azure, GCP
-📊 [VictoriaMetrics] Stored AWS compute cost: $523.45
-🚨 [AlertManager] Cost anomaly detected! AWS compute $523.45 (79.6% above baseline)
-🔁 [Kafka] Producing event: {provider: "AWS", service: "EC2", deviation: 79.6%}
-⚙️ [Argo Workflows] Starting compute-optimization workflow
+🚀 Starting Cloud Cost Tracking System Simulation
+================================================
+📊 [Fluent Bit] Collecting logs from AWS EC2
+📊 [VictoriaMetrics] Stored AWS EC2 cost: $296.46
+📊 [Fluent Bit] Collecting logs from AWS S3
+📊 [VictoriaMetrics] Stored AWS S3 cost: $191.08
+📊 [Fluent Bit] Collecting logs from AWS Lambda
+📊 [VictoriaMetrics] Stored AWS Lambda cost: $94.02
+📊 [Fluent Bit] Collecting logs from Azure VM
+📊 [VictoriaMetrics] Stored Azure VM cost: $224.73
+📊 [Fluent Bit] Collecting logs from Azure Storage
+📊 [VictoriaMetrics] Stored Azure Storage cost: $116.04
+📊 [Fluent Bit] Collecting logs from Azure Functions
+📊 [VictoriaMetrics] Stored Azure Functions cost: $88.20
+📊 [Fluent Bit] Collecting logs from GCP Compute
+📊 [VictoriaMetrics] Stored GCP Compute cost: $273.48
+📊 [Fluent Bit] Collecting logs from GCP Storage
+📊 [VictoriaMetrics] Stored GCP Storage cost: $110.53
+📊 [Fluent Bit] Collecting logs from GCP BigQuery
+📊 [VictoriaMetrics] Stored GCP BigQuery cost: $181.42
+📊 [Fluent Bit] Collecting logs from AWS EC2
+📊 [VictoriaMetrics] Stored AWS EC2 cost: $280.33
+📊 [Fluent Bit] Collecting logs from AWS S3
+📊 [VictoriaMetrics] Stored AWS S3 cost: $142.88
+📊 [Fluent Bit] Collecting logs from AWS Lambda
+📊 [VictoriaMetrics] Stored AWS Lambda cost: $85.44
+📊 [Fluent Bit] Collecting logs from Azure VM
+📊 [VictoriaMetrics] Stored Azure VM cost: $206.14
+📊 [Fluent Bit] Collecting logs from Azure Storage
+📊 [VictoriaMetrics] Stored Azure Storage cost: $112.57
+📊 [Fluent Bit] Collecting logs from Azure Functions
+📊 [VictoriaMetrics] Stored Azure Functions cost: $69.81
+📊 [Fluent Bit] Collecting logs from GCP Compute
+📊 [VictoriaMetrics] Stored GCP Compute cost: $298.76
+📊 [Fluent Bit] Collecting logs from GCP Storage
+📊 [VictoriaMetrics] Stored GCP Storage cost: $108.82
+📊 [Fluent Bit] Collecting logs from GCP BigQuery
+📊 [VictoriaMetrics] Stored GCP BigQuery cost: $212.36
+📊 [Fluent Bit] Collecting logs from AWS EC2
+📊 [VictoriaMetrics] Stored AWS EC2 cost: $260.48
+📊 [Fluent Bit] Collecting logs from AWS S3
+📊 [VictoriaMetrics] Stored AWS S3 cost: $122.23
+📊 [Fluent Bit] Collecting logs from AWS Lambda
+📊 [VictoriaMetrics] Stored AWS Lambda cost: $104.54
+📊 [Fluent Bit] Collecting logs from Azure VM
+📊 [VictoriaMetrics] Stored Azure VM cost: $220.32
+📊 [Fluent Bit] Collecting logs from Azure Storage
+📊 [VictoriaMetrics] Stored Azure Storage cost: $113.61
+📊 [Fluent Bit] Collecting logs from Azure Functions
+📊 [VictoriaMetrics] Stored Azure Functions cost: $75.71
+📊 [Fluent Bit] Collecting logs from GCP Compute
+📊 [VictoriaMetrics] Stored GCP Compute cost: $298.79
+📊 [Fluent Bit] Collecting logs from GCP Storage
+📊 [VictoriaMetrics] Stored GCP Storage cost: $133.81
+📊 [Fluent Bit] Collecting logs from GCP BigQuery
+📊 [VictoriaMetrics] Stored GCP BigQuery cost: $325.49
+🚨 [AlertManager] Cost anomaly detected! GCP BigQuery $325.49 (62.7% above baseline)
+🔁 [Kafka] Producing event: {provider: "GCP", service: "BigQuery", deviation: 62.7%}
+⚙️ [Argo Workflows] Starting bigquery-optimization workflow
+🔑 [HashiCorp Vault] Retrieved GCP credentials
 🔒 [AdmissionController] Policy validation passed
-📉 [Argo Workflows] Rightsizing complete: $523.45 → $418.76 (20% reduction)
+📉 [Argo Workflows] Rightsizing complete: $325.49 → $260.39 (20% reduction)
+💾 [PostgreSQL] Stored optimization result for GCP BigQuery
+🔔 [Zenduty] Created incident for GCP BigQuery cost spike (62.7%)
+🚨 [AlertManager] Cost anomaly detected! GCP BigQuery $325.49 (62.7% above baseline)
+🔁 [Kafka] Producing event: {provider: "GCP", service: "BigQuery", deviation: 62.7%}
+⚙️ [Argo Workflows] Starting bigquery-optimization workflow
+🔑 [HashiCorp Vault] Retrieved GCP credentials
+🔒 [AdmissionController] Policy validation passed
+📉 [Argo Workflows] Rightsizing complete: $325.49 → $260.39 (20% reduction)
+💾 [PostgreSQL] Stored optimization result for GCP BigQuery
+🔔 [Zenduty] Created incident for GCP BigQuery cost spike (62.7%)
+
+📊 Optimization Results Summary
+==============================
+• GCP BigQuery: $65.10 saved
+• GCP BigQuery: $65.10 saved
+
+Total estimated monthly savings: $130.19
+
+📈 [Grafana] Updated cost optimization dashboard with latest results
 ```
 
 
