@@ -10,7 +10,7 @@ The system is designed to:
 
 ---
 ## **Architecture**
-![Architecture Diagram](Atlan.png)
+![Architecture Diagram](Atlan1.png)
 ---
 ## **Project Structure**
 
