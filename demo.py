@@ -1,147 +1,149 @@
-"""
-Cloud Cost Optimization Demo - High-Level Workflow Simulation
-Components Modeled:
-- Cloud APIs (AWS/Azure/GCP)
-- VictoriaMetrics (TSDB)
-- Apache Kafka (Event Stream)
-- Argo Workflows (Automation)
-- Alertmanager (Alerting)
-"""
-
-import asyncio
 import random
-from dataclasses import dataclass
-from datetime import datetime
-from enum import Enum
+import asyncio
 
-# Configuration
-class CloudProvider(Enum):
-    AWS = 1
-    AZURE = 2
-    GCP = 3
+# Simulated cloud providers
+cloud_providers = ['AWS', 'Azure', 'GCP']
+services = {'AWS': ['EC2', 'S3', 'Lambda'], 'Azure': ['VM', 'Storage', 'Functions'], 'GCP': ['Compute', 'Storage', 'BigQuery']}
 
-COST_THRESHOLDS = {
-    CloudProvider.AWS: 500,
-    CloudProvider.AZURE: 450,
-    CloudProvider.GCP: 400
-}
-KAFKA_TOPIC = "cost-events"
-ARGOWORKFLOW_OPTIMIZATION_MAP = {
-    "compute": "argo-workflow-compute-optimization",
-    "storage": "argo-workflow-storage-cleanup"
+# Baseline costs for simulation
+baseline_costs = {
+    'AWS': {'EC2': 300, 'S3': 150, 'Lambda': 100},
+    'Azure': {'VM': 250, 'Storage': 120, 'Functions': 80},
+    'GCP': {'Compute': 280, 'Storage': 130, 'BigQuery': 200}
 }
 
-@dataclass
-class CostMetric:
-    timestamp: datetime
-    provider: CloudProvider
-    service: str
-    cost: float
-    tags: dict
+# Simulated data stores
+metrics_store = {}
+optimization_results = []
 
-class CostMonitor:
-    """Simulates VictoriaMetrics integration and cost data collection"""
-    
-    def __init__(self):
-        self.metrics = []
-    
-    async def collect_metrics(self):
-        """Simulate periodic metric collection from cloud providers"""
-        while True:
-            for provider in CloudProvider:
-                cost = random.uniform(300, 600)  # Simulated API call
-                metric = CostMetric(
-                    timestamp=datetime.now(),
-                    provider=provider,
-                    service=random.choice(["compute", "storage", "database"]),
-                    cost=cost,
-                    tags={"environment": "prod", "team": random.choice(["team-a", "team-b"])}
-                )
-                self.metrics.append(metric)
-                print(f"📊 [VictoriaMetrics] Stored {provider.name} {metric.service} cost: ${cost:.2f}")
-            await asyncio.sleep(5)
+async def fluentbit_collect_logs():
+    """Simulate Fluent Bit collecting logs from cloud providers"""
+    for _ in range(3):  # limited iterations for demo
+        for provider in cloud_providers:
+            for service in services[provider]:
+                # Add some randomness to make some costs spike above baseline
+                cost_factor = random.uniform(0.8, 1.8) if random.random() > 0.7 else random.uniform(0.8, 1.1)
+                cost = baseline_costs[provider][service] * cost_factor
+                
+                # Store in metrics database
+                if provider not in metrics_store:
+                    metrics_store[provider] = {}
+                metrics_store[provider][service] = cost
+                
+                print(f"📊 [Fluent Bit] Collecting logs from {provider} {service}")
+                print(f"📊 [VictoriaMetrics] Stored {provider} {service} cost: ${cost:.2f}")
+        
+        # Allow time for AlertManager to check metrics
+        await asyncio.sleep(1)
 
-class AnomalyDetector:
-    """Simulates anomaly detection and Kafka event production"""
+async def alertmanager_check_metrics():
+    """Simulate AlertManager checking metrics and detecting anomalies"""
+    # Wait for initial data collection
+    await asyncio.sleep(1)
     
-    def __init__(self, cost_monitor: CostMonitor):
-        self.cost_monitor = cost_monitor
-        self.kafka_events = []
-    
-    async def analyze_metrics(self):
-        """Check for cost anomalies and produce Kafka events"""
-        while True:
-            latest_metrics = self.cost_monitor.metrics[-3:]  # Get last 3 metrics
-            for metric in latest_metrics:
-                threshold = COST_THRESHOLDS[metric.provider]
-                if metric.cost > threshold:
+    for _ in range(3):  # limited iterations for demo
+        for provider in metrics_store:
+            for service, cost in metrics_store[provider].items():
+                baseline = baseline_costs[provider][service]
+                deviation = ((cost - baseline) / baseline) * 100
+                
+                # Alert if cost exceeds threshold (20% above baseline)
+                if deviation > 20:
+                    print(f"🚨 [AlertManager] Cost anomaly detected! {provider} {service} ${cost:.2f} ({deviation:.1f}% above baseline)")
+                    
+                    # Create event
                     event = {
-                        "timestamp": metric.timestamp.isoformat(),
-                        "provider": metric.provider.name,
-                        "service": metric.service,
-                        "cost": metric.cost,
-                        "threshold": threshold,
-                        "tags": metric.tags
+                        'provider': provider,
+                        'service': service,
+                        'current_cost': cost,
+                        'baseline_cost': baseline,
+                        'deviation_percentage': deviation
                     }
-                    self.kafka_events.append(event)
-                    print(f"🚨 [AlertManager] Cost anomaly detected! {event}")
-                    await self.trigger_kafka_event(event)
-            await asyncio.sleep(3)
+                    
+                    # Send to Kafka
+                    await kafka_produce_event(event)
+                    
+                    # Create incident in Zenduty for critical anomalies
+                    if deviation > 50:
+                        print(f"🔔 [Zenduty] Created incident for {provider} {service} cost spike ({deviation:.1f}%)")
+        
+        await asyncio.sleep(1)
 
-    async def trigger_kafka_event(self, event):
-        """Simulate Kafka event production"""
-        print(f"🔁 [Kafka] Producing event to '{KAFKA_TOPIC}': {event}")
-        # In real implementation: kafka_producer.send(KAFKA_TOPIC, value=event)
-
-class ArgoWorkflowOrchestrator:
-    """Simulates Argo Workflows automation"""
+async def kafka_produce_event(event):
+    """Simulate Kafka producing an event"""
+    print(f"🔁 [Kafka] Producing event: {{provider: \"{event['provider']}\", service: \"{event['service']}\", deviation: {event['deviation_percentage']:.1f}%}}")
     
-    def __init__(self, anomaly_detector: AnomalyDetector):
-        self.anomaly_detector = anomaly_detector
-    
-    async def listen_for_events(self):
-        """Simulate event consumption from Kafka"""
-        while True:
-            if self.anomaly_detector.kafka_events:
-                event = self.anomaly_detector.kafka_events.pop(0)
-                await self.trigger_optimization_workflow(event)
-            await asyncio.sleep(1)
+    # Pass event to Argo Workflows
+    await argo_consume_event(event)
 
-    async def trigger_optimization_workflow(self, event):
-        """Simulate Argo Workflow execution"""
-        workflow_type = ARGOWORKFLOW_OPTIMIZATION_MAP.get(event["service"], "default")
-        print(f"⚙️ [Argo Workflows] Starting {workflow_type} for {event['provider']} {event['service']}")
-        print(f"   📉 Cost before: ${event['cost']:.2f}")
-        optimized_cost = event["cost"] * 0.8  # Simulate 20% reduction
-        print(f"   📈 Optimized cost: ${optimized_cost:.2f}")
-        # Simulate Admission Controller policy check
-        print("🔒 [Admission Controller] Policy validation passed")
+async def argo_consume_event(event):
+    """Simulate Argo Workflows consuming event and triggering optimization"""
+    print(f"⚙️ [Argo Workflows] Starting {event['service'].lower()}-optimization workflow")
+    
+    # Get credentials from Vault
+    print(f"🔑 [HashiCorp Vault] Retrieved {event['provider']} credentials")
+    
+    # Check policy with AdmissionController
+    approved = admission_controller_policy_check(event)
+    
+    if approved:
+        print(f"🔒 [AdmissionController] Policy validation passed")
+        
+        # Simulate optimization (20% cost reduction)
+        optimized_cost = event['current_cost'] * 0.8
+        print(f"📉 [Argo Workflows] Rightsizing complete: ${event['current_cost']:.2f} → ${optimized_cost:.2f} (20% reduction)")
+        
+        # Store optimization result in PostgreSQL
+        store_result_in_postgres(event, optimized_cost)
+    else:
+        print(f"❌ [AdmissionController] Policy validation failed")
+
+def admission_controller_policy_check(event):
+    """Simulate policy validation logic"""
+    # For simplicity, approve all events with deviation less than 100%
+    # In a real system, this would check against organizational policies
+    return event['deviation_percentage'] < 100
+
+def store_result_in_postgres(event, optimized_cost):
+    """Simulate storing results in PostgreSQL"""
+    result = {
+        'provider': event['provider'],
+        'service': event['service'],
+        'before_cost': event['current_cost'],
+        'after_cost': optimized_cost,
+        'savings': event['current_cost'] - optimized_cost
+    }
+    optimization_results.append(result)
+    print(f"💾 [PostgreSQL] Stored optimization result for {event['provider']} {event['service']}")
 
 async def main():
-    """Run the complete simulation"""
-    cost_monitor = CostMonitor()
-    anomaly_detector = AnomalyDetector(cost_monitor)
-    workflow_orchestrator = ArgoWorkflowOrchestrator(anomaly_detector)
-
-    # Start all components
-    tasks = [
-        cost_monitor.collect_metrics(),
-        anomaly_detector.analyze_metrics(),
-        workflow_orchestrator.listen_for_events()
-    ]
+    """Main function to coordinate all components"""
+    print("🚀 Starting Cloud Cost Tracking System Simulation")
+    print("================================================")
     
-    await asyncio.gather(*tasks)
+    # Run collection and alerting concurrently
+    collection_task = asyncio.create_task(fluentbit_collect_logs())
+    alerting_task = asyncio.create_task(alertmanager_check_metrics())
+    
+    # Wait for all tasks to complete
+    await asyncio.gather(
+        collection_task,
+        alerting_task
+    )
+    
+    # Print summary of optimizations
+    print("\n📊 Optimization Results Summary")
+    print("==============================")
+    total_savings = 0
+    for result in optimization_results:
+        savings = result['before_cost'] - result['after_cost']
+        total_savings += savings
+        print(f"• {result['provider']} {result['service']}: ${savings:.2f} saved")
+    
+    print(f"\nTotal estimated monthly savings: ${total_savings:.2f}")
+    
+    # Visualize in Grafana (simulated)
+    print("\n📈 [Grafana] Updated cost optimization dashboard with latest results")
 
-if __name__ == "__main__":
-    print("""\
-=== Cloud Cost Optimization Workflow Simulation ===
-Components:
-- Cloud Providers (AWS/Azure/GCP)
-- VictoriaMetrics (Time Series DB)
-- AlertManager → Kafka (Event Streaming)
-- Argo Workflows + Admission Controller (Automation)
-    """)
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        print("\nSimulation stopped")
+# Run the async main function
+asyncio.run(main())
